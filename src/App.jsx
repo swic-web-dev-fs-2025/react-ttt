@@ -38,7 +38,7 @@ export default function App() {
       <div className="flex flex-col items-center gap-6">
         {/* Status message */}
         <header className="text-3xl font-bold text-white">
-          {getStatusMessage()}
+          <h1>{getStatusMessage()}</h1>
         </header>
 
         <div className="relative grid grid-cols-3 w-fit gap-0">
