@@ -1,31 +1,23 @@
 import { useState } from "react";
-
 import { calculateWinner } from "./lib";
 
 export default function App() {
-  const [turn, setTurn] = useState("X"); // "X" is first turn
+  const [turn, setTurn] = useState("X");
   const [squares, setSquares] = useState(Array(9).fill(null));
 
-  // Derived state
-  const hasGameStarted = squares.some((square) => square !== null);
-  const winner = calculateWinner(squares);
-  const isTie = !winner && squares.every((square) => square !== null);
+  const result = calculateWinner(squares);
+  const winner = result?.winner || null;
+  const winningLine = result?.line || null;
 
-  const getStatusMessage = () => {
-    if (winner) return `Winner: ${winner}! 🎉`;
-    if (isTie) return "It's a tie! 🤝";
-
-    return `Next player: ${turn}`;
-  };
+  const hasGameStarted = squares.some((s) => s !== null);
+  const isTie = !winner && squares.every((s) => s !== null);
 
   const handleClick = (index) => {
-    if (squares[index] || winner) return; // Ignore click if square is already filled or game is won.
-
-    const newSquares = [...squares]; // * No mutation of state!
+    if (squares[index] || winner) return;
+    const newSquares = [...squares];
     newSquares[index] = turn;
-
     setSquares(newSquares);
-    setTurn((prev) => (prev === "X" ? "O" : "X"));
+    setTurn(turn === "X" ? "O" : "X");
   };
 
   const handleReset = () => {
@@ -33,20 +25,23 @@ export default function App() {
     setTurn("X");
   };
 
+  const getStatusMessage = () => {
+    if (winner) return `Winner: ${winner}! 🎉`;
+    if (isTie) return "It's a tie! 🤝";
+    return `Next player: ${turn}`;
+  };
+
   return (
     <main className="w-screen h-screen flex justify-center items-center bg-gray-900">
       <div className="flex flex-col items-center gap-6">
-        {/* Status message */}
         <header className="text-3xl font-bold text-white">
-          <h1>{getStatusMessage()}</h1>
+          {getStatusMessage()}
         </header>
 
         <div className="relative grid grid-cols-3 w-fit gap-0">
-          {/* Horizontal lines */}
+          {/* Grid lines */}
           <div className="absolute left-0 right-0 h-1 bg-purple-500 top-[calc(33.333%-0.125rem)]" />
           <div className="absolute left-0 right-0 h-1 bg-purple-500 top-[calc(66.666%-0.125rem)]" />
-
-          {/* Vertical lines */}
           <div className="absolute top-0 bottom-0 w-1 bg-purple-500 left-[calc(33.333%-0.125rem)]" />
           <div className="absolute top-0 bottom-0 w-1 bg-purple-500 left-[calc(66.666%-0.125rem)]" />
 
@@ -54,13 +49,12 @@ export default function App() {
             <Square
               key={i}
               value={squares[i]}
-              // Parent manages the square's state and 🆔. Square is more presentational.
               onClick={() => handleClick(i)}
+              isWinning={winningLine?.includes(i)}
             />
           ))}
         </div>
 
-        {/* Reset button */}
         <button
           onClick={handleReset}
           disabled={!hasGameStarted}
@@ -77,10 +71,12 @@ export default function App() {
   );
 }
 
-function Square({ value, onClick }) {
+function Square({ value, onClick, isWinning }) {
   return (
     <button
-      className="text-9xl font-bold size-36 text-center text-white hover:bg-slate-700 transition-colors duration-200 cursor-pointer"
+      className={`text-9xl font-bold size-36 text-center transition-all duration-300
+        ${isWinning ? "bg-green-500 ring-4 ring-yellow-400 scale-105" : "text-white hover:bg-slate-700"} 
+      `}
       onClick={onClick}
     >
       {value}
