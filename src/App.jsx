@@ -6,8 +6,8 @@ export default function App() {
   const [turn, setTurn] = useState("X"); // "X" is first turn
   const [squares, setSquares] = useState(Array(9).fill(null));
 
+  // Derived state
   const hasGameStarted = squares.some((square) => square !== null);
-
   const winner = calculateWinner(squares);
   const isTie = !winner && squares.every((square) => square !== null);
 
@@ -18,7 +18,7 @@ export default function App() {
     newSquares[index] = turn;
 
     setSquares(newSquares);
-    setTurn(turn === "X" ? "O" : "X");
+    setTurn((prev) => (prev === "X" ? "O" : "X"));
   };
 
   const handleReset = () => {
