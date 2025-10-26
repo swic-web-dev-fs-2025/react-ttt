@@ -4,17 +4,17 @@ import { calculateWinner } from "./lib.js";
 describe("calculateWinner", () => {
   test("returns null for empty board", () => {
     const board = Array(9).fill(null);
-    expect(calculateWinner(board)).toBeNull();
+    expect(calculateWinner(board)).toEqual({ winner: null, line: null });
   });
 
   test("returns null for incomplete game", () => {
     const board = ["X", "O", "X", null, "O", null, null, null, null];
-    expect(calculateWinner(board)).toBeNull();
+    expect(calculateWinner(board)).toEqual({ winner: null, line: null });
   });
 
   test("returns null for full board with no winner (draw)", () => {
     const board = ["X", "X", "O", "O", "O", "X", "X", "O", "X"];
-    expect(calculateWinner(board)).toBeNull();
+    expect(calculateWinner(board)).toEqual({ winner: null, line: null });
   });
 
   describe("X wins", () => {
