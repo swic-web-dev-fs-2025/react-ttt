@@ -8,7 +8,11 @@ export default function App() {
 
   // Derived state
   const hasGameStarted = squares.some((square) => square !== null);
-  const winner = calculateWinner(squares);
+
+  const winnerResult = calculateWinner(squares);
+  const winner = winnerResult?.winner || null;
+  const winningLine = winnerResult?.line || null;
+
   const isTie = !winner && squares.every((square) => square !== null);
 
   const getStatusMessage = () => {
@@ -54,6 +58,7 @@ export default function App() {
             <Square
               key={i}
               value={squares[i]}
+              hasWinner={winningLine?.includes(i)}
               // Parent manages the square's state and 🆔. Square is more presentational.
               onClick={() => handleClick(i)}
             />
@@ -77,10 +82,19 @@ export default function App() {
   );
 }
 
-function Square({ value, onClick }) {
+function Square({ value, onClick, hasWinner }) {
+  const baseClasses =
+    "text-9xl font-bold size-36 text-center text-white transition-colors duration-200 cursor-pointer";
+  const hoverClasses = !value && !hasWinner ? "hover:bg-slate-700" : "";
+  const winningClasses = hasWinner
+    ? "bg-green-600 shadow-[0_0_15px_rgba(34,197,94,0.8)]"
+    : "";
+
   return (
     <button
-      className="text-9xl font-bold size-36 text-center text-white hover:bg-slate-700 transition-colors duration-200 cursor-pointer"
+      className={[baseClasses, hoverClasses, winningClasses]
+        .filter(Boolean) // Remove empty strings.
+        .join(" ")}
       onClick={onClick}
     >
       {value}
